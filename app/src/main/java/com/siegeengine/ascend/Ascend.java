@@ -177,11 +177,11 @@ public class Ascend extends Activity {
         //Draw circles with calculated centre coordinates
         for (int i=0;i<3;i++){
             //Get a random colour, Draw the circle
-            paint.setColor(Color.argb(150, random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+            paint.setColor(Color.argb(200, random.nextInt(255), random.nextInt(255), random.nextInt(255)));
             paint.setTextSize(radii.get(i)*2);
             gameCanvas.drawCircle(centreListX.get(i), centreListY.get(i), radii.get(i), paint);
-            paint.setAlpha(255);
-            gameCanvas.drawText(""+(3-i),(centreListX.get(i)-radii.get(i)/2),(centreListY.get(i)+radii.get(i)/2),paint);
+            paint.setColor(Color.WHITE);
+            gameCanvas.drawText(""+(3-i),(centreListX.get(i)-radii.get(i)/1.8f),(centreListY.get(i)+radii.get(i)/1.5f),paint);
         }
     }
 
@@ -216,6 +216,7 @@ public class Ascend extends Activity {
 if all three are selected start a new game*/
     void colourTheCircleTouched(int circleTouched){
         paint.setColor(Color.DKGRAY);
+        paint.setAlpha(200);
         gameCanvas.drawCircle(centreListX.get(circleTouched),centreListY.get(circleTouched),radii.get(circleTouched),paint);
         gameView.setImageBitmap(blankBitmap);
 
