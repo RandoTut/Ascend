@@ -177,8 +177,11 @@ public class Ascend extends Activity {
         //Draw circles with calculated centre coordinates
         for (int i=0;i<3;i++){
             //Get a random colour, Draw the circle
-            paint.setColor(Color.argb(255, random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+            paint.setColor(Color.argb(150, random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+            paint.setTextSize(radii.get(i)*2);
             gameCanvas.drawCircle(centreListX.get(i), centreListY.get(i), radii.get(i), paint);
+            paint.setAlpha(255);
+            gameCanvas.drawText(""+(3-i),(centreListX.get(i)-radii.get(i)/2),(centreListY.get(i)+radii.get(i)/2),paint);
         }
     }
 
@@ -212,7 +215,7 @@ public class Ascend extends Activity {
     /*Give colour to the circle once it is selected, and
 if all three are selected start a new game*/
     void colourTheCircleTouched(int circleTouched){
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.DKGRAY);
         gameCanvas.drawCircle(centreListX.get(circleTouched),centreListY.get(circleTouched),radii.get(circleTouched),paint);
         gameView.setImageBitmap(blankBitmap);
 
@@ -243,9 +246,9 @@ if all three are selected start a new game*/
 
     //Update the game score
     void updateScore(){
-        gameCanvas.drawColor(Color.argb(130,255,250,250));
+        gameCanvas.drawColor(Color.argb(200,10,250,10));
         paint.setTextSize(50);
-        paint.setColor(Color.GREEN);
+        paint.setColor(Color.WHITE);
         gameCanvas.drawText("Level Complete",50,50,paint);
         gameCanvas.drawText("SCORE : "+level,(noOfHorizontalPixels/2),(noOfVerticalPixels-50),paint);
         gameCanvas.drawText("[Touch anywhere for next level]",50,(noOfVerticalPixels-50),paint);
@@ -253,9 +256,9 @@ if all three are selected start a new game*/
 
     //Game finishes
     void endOfGame(){
-        gameCanvas.drawColor(Color.argb(130,255,250,250));
+        gameCanvas.drawColor(Color.argb(200,255,10,10));
         paint.setTextSize(50);
-        paint.setColor(Color.RED);
+        paint.setColor(Color.WHITE);
         gameCanvas.drawText("FAILED",50,50,paint);
         gameCanvas.drawText("SCORE : "+level,(noOfHorizontalPixels/2),(noOfVerticalPixels-50),paint);
         gameCanvas.drawText("[Touch anywhere to restart]",50,(noOfVerticalPixels-50),paint);
