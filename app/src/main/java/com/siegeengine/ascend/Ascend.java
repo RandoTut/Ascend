@@ -166,7 +166,7 @@ public class Ascend extends Activity {
                 Log.d("DBG-","-------------Second centre found-------");
             }
 
-            if (i==2) {
+            /*if (i==2) {
                 for (int column = 1; column <=gridWidth; column++){
                     centreListX.add(2, column * blockSize);
                     Log.d("DBG- ","column -"+column);
@@ -186,6 +186,18 @@ public class Ascend extends Activity {
                         }
                     }
                 }
+            }
+
+             */
+
+            if (i==2){
+                do {
+                    do {
+                        centreListX.add(2, (random.nextInt(gridWidth - 1) + 1) * blockSize);
+                        centreListY.add(2, (random.nextInt(gridHeight - 1) + 1) * blockSize);
+                        //Log.d("DBG- while loop 2", "CD:" + centreDistance);
+                    }while ( doTheyOverlap(1,2));
+                } while ( doTheyOverlap(0,2));
             }
         }
 
