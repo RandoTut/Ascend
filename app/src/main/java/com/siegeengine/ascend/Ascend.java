@@ -21,7 +21,7 @@ public class Ascend extends Activity {
 
     //Define the variables
     int noOfHorizontalPixels,noOfVerticalPixels;
-    int gridWidth=6,gridHeight,blockSize,centreDistance;
+    int gridWidth,gridHeight=4,blockSize,centreDistance;
     int level,prevCircleTouched;
     List<Integer> centreListX,centreListY,radii;
     List<Integer> circleFlags;
@@ -125,12 +125,13 @@ public class Ascend extends Activity {
 
         intialiseMathsVariables();
 
-        Log.d("DBG-","Inside the newGame()");
+        //Log.d("DBG-","Inside the newLevel()");
         //Wipe the bitmap clean with white
         gameCanvas.drawColor(Color.argb(255,255,255,255));
 
         //Draw the circles
         drawCircles();
+        //drawGrid();
         gameView.setImageBitmap(blankBitmap);
 
     }
@@ -139,8 +140,8 @@ public class Ascend extends Activity {
     void drawCircles(){
         //Log.d("DBG-","Inside drawCircles()");
         //Initialise the radii
-        blockSize   =   noOfHorizontalPixels/gridWidth;
-        gridHeight  =   noOfVerticalPixels/blockSize;
+        blockSize   =   noOfVerticalPixels/gridHeight;
+        gridWidth  =   noOfHorizontalPixels/blockSize;
 
         //Set the radius of all three circles
         radii.add(0,blockSize);
@@ -155,34 +156,50 @@ public class Ascend extends Activity {
             centreListY.add(i, (random.nextInt(gridHeight-1)+1)*blockSize);
 
             if(i==1) {
+                Log.d("DBG-","-------------Second centre-------------");
                 //Distance between new coordinate and previous must be higher than the sum of radius
                 do {
                     centreListX.add(i, (random.nextInt(gridWidth - 1) + 1) * blockSize);
                     centreListY.add(i, (random.nextInt(gridHeight - 1) + 1) * blockSize);
                     //Log.d("DBG- while loop 1", "CD:" + centreDistance);
-                } while (doTheyOverlap(i - 1, i));
+                } while (doTheyOverlap(0, 1));
+                Log.d("DBG-","-------------Second centre found-------");
             }
 
-            if(i==2){
-                do {
-                    do {
-                        centreListX.add(i, (random.nextInt(gridWidth - 1) + 1) * blockSize);
-                        centreListY.add(i, (random.nextInt(gridHeight - 1) + 1) * blockSize);
-                        //Log.d("DBG- while loop 2", "CD:" + centreDistance);
-                    }while ( doTheyOverlap(i-1,i));
-                } while ( doTheyOverlap(i-2,i));
+            if (i==2) {
+                for (int column = 1; column <=gridWidth; column++){
+                    centreListX.add(2, column * blockSize);
+                    Log.d("DBG- ","column -"+column);
+
+                    for (int row = 1; row <gridHeight; row++) {
+                        centreListY.add(2, row * blockSize);
+                        Log.d("DBG- ","row -"+row);
+
+                        if (!doTheyOverlap(1, 2)) {
+                            //Log.d("DBG- ","1&2 do not overlap");
+
+                            if (!doTheyOverlap(0, 2)) {
+                                //Log.d("DBG- ","0&2 do not overlap");
+                                column = gridWidth;
+                                row = gridHeight;
+                            }
+                        }
+                    }
+                }
             }
         }
 
         //Draw circles with calculated centre coordinates
         for (int i=0;i<3;i++){
             //Get a random colour, Draw the circle
-            paint.setColor(Color.argb(200, random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+            paint.setColor(Color.argb(255, random.nextInt(255), random.nextInt(255), random.nextInt(255)));
             paint.setTextSize(radii.get(i)*2);
             gameCanvas.drawCircle(centreListX.get(i), centreListY.get(i), radii.get(i), paint);
             paint.setColor(Color.WHITE);
             gameCanvas.drawText(""+(3-i),(centreListX.get(i)-radii.get(i)/1.8f),(centreListY.get(i)+radii.get(i)/1.5f),paint);
         }
+
+        Log.d("DBG-","End of drawCircles()");
     }
 
     //calculate if two circles overlap
@@ -192,8 +209,7 @@ public class Ascend extends Activity {
                 +
                 (centreListY.get(p)-centreListY.get(q))*(centreListY.get(p)-centreListY.get(q)));
 
-        //Log.d("DBG- overlap? CD"," "+centreDistance);
-        //Log.d("DBG- overlap? +Rs"," "+(radii.get(p)+radii.get(q)));
+        Log.d("DBG- CD",""+centreDistance+"  /  +Rs "+(radii.get(p)+radii.get(q)));
 
         return centreDistance < (radii.get(p) + radii.get(q));
     }
@@ -213,7 +229,7 @@ public class Ascend extends Activity {
     }
 
     /*Give colour to the circle once it is selected, and
-if all three are selected start a new game*/
+    if all three are selected start a new game*/
     void colourTheCircleTouched(int circleTouched){
         paint.setColor(Color.DKGRAY);
         paint.setAlpha(200);
@@ -251,7 +267,7 @@ if all three are selected start a new game*/
         paint.setTextSize(50);
         paint.setColor(Color.WHITE);
         gameCanvas.drawText("Level Complete",50,50,paint);
-        gameCanvas.drawText("SCORE : "+level,(noOfHorizontalPixels/2),(noOfVerticalPixels-50),paint);
+        gameCanvas.drawText("SCORE : "+level, noOfHorizontalPixels/2,(noOfVerticalPixels-50),paint);
         gameCanvas.drawText("[Touch anywhere for next level]",50,(noOfVerticalPixels-50),paint);
     }
 
@@ -261,8 +277,22 @@ if all three are selected start a new game*/
         paint.setTextSize(50);
         paint.setColor(Color.WHITE);
         gameCanvas.drawText("FAILED",50,50,paint);
-        gameCanvas.drawText("SCORE : "+level,(noOfHorizontalPixels/2),(noOfVerticalPixels-50),paint);
+        gameCanvas.drawText("SCORE : "+level, noOfHorizontalPixels/2,(noOfVerticalPixels-50),paint);
         gameCanvas.drawText("[Touch anywhere to restart]",50,(noOfVerticalPixels-50),paint);
+    }
+
+    //draw the grid for debugging purposes
+    void drawGrid(){
+        paint.setColor(Color.DKGRAY);
+        //Horizontal lines
+        for (int i=1;i<gridHeight;i++){
+            gameCanvas.drawLine(blockSize,i*blockSize,(gridWidth-1)*blockSize,i*blockSize,paint);
+        }
+
+        //Vertical lines
+        for (int i=1;i<=gridWidth;i++){
+            gameCanvas.drawLine(i*blockSize,blockSize,i*blockSize,(gridHeight-1)*blockSize,paint);
+        }
     }
 
 }
