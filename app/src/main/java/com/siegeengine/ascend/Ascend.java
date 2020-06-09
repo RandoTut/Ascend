@@ -22,10 +22,11 @@ public class Ascend extends Activity {
     //Define the variables
     int noOfHorizontalPixels,noOfVerticalPixels;
     int gridWidth,gridHeight=4,blockSize,centreDistance;
-    int level,prevCircleTouched;
+    int level,prevCircleTouched,speedBonus,score;
     List<Integer> centreListX,centreListY,radii;
     List<Integer> circleFlags;
     boolean levelComplete,restartGame;
+    private long elapsedTime;
 
     Random  random  =   new Random();
 
@@ -47,6 +48,10 @@ public class Ascend extends Activity {
         circleFlags.add(1,0);
         circleFlags.add(2,0);
 
+        //Reset the elapsed time & bonus for last round
+        speedBonus  =0;
+        elapsedTime =0;
+
         prevCircleTouched=3;
 
         levelComplete = false;
@@ -56,6 +61,7 @@ public class Ascend extends Activity {
     void resetTheMathsVariables(){
         restartGame=false;
         level=0;
+        score=0;
     }
 
     //Initialise the graphics variables
@@ -131,6 +137,10 @@ public class Ascend extends Activity {
 
         //Draw the circles
         drawCircles();
+
+        //Get the current time
+        elapsedTime     =   System.currentTimeMillis();
+
         //drawGrid();
         gameView.setImageBitmap(blankBitmap);
 
@@ -275,12 +285,20 @@ public class Ascend extends Activity {
 
     //Update the game score
     void updateScore(){
+
+        //Calculate the elapsed time for this level, this was intialised inside newLevel()
+        elapsedTime =   System.currentTimeMillis()-elapsedTime;
+        speedBonus  =  ( 3000/(int)elapsedTime);
+        score       =   level+speedBonus;
+
         gameCanvas.drawColor(Color.argb(200,10,250,10));
         paint.setTextSize(50);
         paint.setColor(Color.WHITE);
         gameCanvas.drawText("Level Complete",50,50,paint);
-        gameCanvas.drawText("SCORE : "+level, noOfHorizontalPixels/2,(noOfVerticalPixels-50),paint);
-        gameCanvas.drawText("[Touch anywhere for next level]",50,(noOfVerticalPixels-50),paint);
+        gameCanvas.drawText("Level : "+level, noOfHorizontalPixels/2,50,paint);
+        gameCanvas.drawText("SCORE : "+score, 50,(noOfVerticalPixels-100),paint);
+        gameCanvas.drawText("Speed Bonus : "+speedBonus,50,(noOfVerticalPixels-50),paint);
+        gameCanvas.drawText("[Touch anywhere for next level]",noOfHorizontalPixels/2,(noOfVerticalPixels-50),paint);
     }
 
     //Game finishes
@@ -288,9 +306,10 @@ public class Ascend extends Activity {
         gameCanvas.drawColor(Color.argb(200,255,10,10));
         paint.setTextSize(50);
         paint.setColor(Color.WHITE);
-        gameCanvas.drawText("FAILED",50,50,paint);
-        gameCanvas.drawText("SCORE : "+level, noOfHorizontalPixels/2,(noOfVerticalPixels-50),paint);
-        gameCanvas.drawText("[Touch anywhere to restart]",50,(noOfVerticalPixels-50),paint);
+        gameCanvas.drawText("UH OH - SAUSAGE FINGERS",50,50,paint);
+        gameCanvas.drawText("Level : "+level, noOfHorizontalPixels/2,50,paint);
+        gameCanvas.drawText("SCORE : "+score, 50,(noOfVerticalPixels-50),paint);
+        gameCanvas.drawText("[Touch anywhere to restart]",noOfHorizontalPixels/2,(noOfVerticalPixels-50),paint);
     }
 
     //draw the grid for debugging purposes
