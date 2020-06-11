@@ -22,7 +22,7 @@ public class Ascend extends Activity {
     //Define the variables
     int noOfHorizontalPixels,noOfVerticalPixels;
     int gridWidth,gridHeight=4,blockSize,centreDistance;
-    int level,prevCircleTouched,speedBonus,score;
+    int level,prevCircleTouched,speedBonus,score,fontSize;
     List<Integer> centreListX,centreListY,radii;
     List<Integer> circleFlags;
     boolean levelComplete,restartGame;
@@ -60,7 +60,7 @@ public class Ascend extends Activity {
     //reset variables for a game restart
     void resetTheMathsVariables(){
         restartGame=false;
-        level=0;
+        level=1;
         score=0;
     }
 
@@ -84,6 +84,9 @@ public class Ascend extends Activity {
         //Make the canvas white
         gameCanvas.drawColor(Color.argb(255,255,255,255));
 
+        //Set the score page font size as 10% of vertical pixels
+        fontSize =   noOfVerticalPixels/15;
+
         //Initialise the paint
         paint           =   new Paint();
     }
@@ -99,7 +102,7 @@ public class Ascend extends Activity {
         setContentView(gameView);
 
         //Call the new game method
-        level   =   0;
+        level   =   1;
         newLevel();
 
     }
@@ -176,29 +179,6 @@ public class Ascend extends Activity {
                 Log.d("DBG-","-------------Second centre found-------");
             }
 
-            /*if (i==2) {
-                for (int column = 1; column <=gridWidth; column++){
-                    centreListX.add(2, column * blockSize);
-                    Log.d("DBG- ","column -"+column);
-
-                    for (int row = 1; row <gridHeight; row++) {
-                        centreListY.add(2, row * blockSize);
-                        Log.d("DBG- ","row -"+row);
-
-                        if (!doTheyOverlap(1, 2)) {
-                            //Log.d("DBG- ","1&2 do not overlap");
-
-                            if (!doTheyOverlap(0, 2)) {
-                                //Log.d("DBG- ","0&2 do not overlap");
-                                column = gridWidth;
-                                row = gridHeight;
-                            }
-                        }
-                    }
-                }
-            }
-
-             */
 
             if (i==2){
                 do {
@@ -220,6 +200,11 @@ public class Ascend extends Activity {
             paint.setColor(Color.WHITE);
             gameCanvas.drawText(""+(3-i),(centreListX.get(i)-radii.get(i)/1.8f),(centreListY.get(i)+radii.get(i)/1.5f),paint);
         }
+
+        //Display the current level
+        paint.setTextSize(fontSize);
+        paint.setColor(Color.GREEN);
+        gameCanvas.drawText("LVL : "+level, 50, fontSize,paint);
 
         Log.d("DBG-","End of drawCircles()");
     }
@@ -267,7 +252,6 @@ public class Ascend extends Activity {
         if(circleTouched<prevCircleTouched){
             //check if all circles are selected
             if ( (circleFlags.get(0)+ circleFlags.get(1)+ circleFlags.get(2))==3){
-                level++;
                 levelComplete =true;
                 updateScore();
             }
@@ -289,27 +273,32 @@ public class Ascend extends Activity {
         //Calculate the elapsed time for this level, this was intialised inside newLevel()
         elapsedTime =   System.currentTimeMillis()-elapsedTime;
         speedBonus  =  ( 3000/(int)elapsedTime);
-        score       =   level+speedBonus;
+        score       =   score+1+speedBonus;
 
         gameCanvas.drawColor(Color.argb(200,10,250,10));
-        paint.setTextSize(50);
+        paint.setTextSize(fontSize);
         paint.setColor(Color.WHITE);
-        gameCanvas.drawText("Level Complete",50,50,paint);
-        gameCanvas.drawText("Level : "+level, noOfHorizontalPixels/2,50,paint);
-        gameCanvas.drawText("SCORE : "+score, 50,(noOfVerticalPixels-100),paint);
-        gameCanvas.drawText("Speed Bonus : "+speedBonus,50,(noOfVerticalPixels-50),paint);
-        gameCanvas.drawText("[Touch anywhere for next level]",noOfHorizontalPixels/2,(noOfVerticalPixels-50),paint);
+        gameCanvas.drawText("LEVEL COMPLETE",(noOfHorizontalPixels/2-3*fontSize), noOfVerticalPixels/2,paint);
+        gameCanvas.drawText("LVL : "+level, 50, fontSize,paint);
+        gameCanvas.drawText("SCORE : "+score, 50,(noOfVerticalPixels- fontSize *2),paint);
+        gameCanvas.drawText("SPEED BONUS : "+speedBonus,50,(noOfVerticalPixels- fontSize),paint);
+        paint.setTextSize(fontSize/1.5f);
+        gameCanvas.drawText("[Touch anywhere for next level]",noOfHorizontalPixels-10*fontSize,(noOfVerticalPixels- fontSize),paint);
+
+        //Update the score then increase the level
+        level++;
     }
 
     //Game finishes
     void endOfGame(){
         gameCanvas.drawColor(Color.argb(200,255,10,10));
-        paint.setTextSize(50);
+        paint.setTextSize(fontSize);
         paint.setColor(Color.WHITE);
-        gameCanvas.drawText("UH OH - SAUSAGE FINGERS",50,50,paint);
-        gameCanvas.drawText("Level : "+level, noOfHorizontalPixels/2,50,paint);
-        gameCanvas.drawText("SCORE : "+score, 50,(noOfVerticalPixels-50),paint);
-        gameCanvas.drawText("[Touch anywhere to restart]",noOfHorizontalPixels/2,(noOfVerticalPixels-50),paint);
+        gameCanvas.drawText("UH OH - SAUSAGE FINGERS",noOfHorizontalPixels/2-5*fontSize,noOfVerticalPixels/2,paint);
+        gameCanvas.drawText("LVL : "+level, 50, fontSize,paint);
+        gameCanvas.drawText("SCORE : "+score, 50,(noOfVerticalPixels-fontSize),paint);
+        paint.setTextSize(fontSize/1.5f);
+        gameCanvas.drawText("[Touch anywhere to restart]",noOfHorizontalPixels-10*fontSize,(noOfVerticalPixels-fontSize),paint);
     }
 
     //draw the grid for debugging purposes
